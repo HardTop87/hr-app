@@ -909,6 +909,22 @@ const resources = {
           submit: 'Antrag einreichen',
           submitting: 'Wird eingereicht...',
           cancel: 'Abbrechen',
+          calculatedDays: 'Das sind {{days}} Arbeitstage',
+          remainingAfter: 'Verbleibend nach Antrag: {{days}} Tage',
+          destinationCountry: 'Zielland',
+          forA1: '(für A1-Bescheinigung)',
+          countryPlaceholder: 'z.B. Portugal',
+          certificate: 'Attest / Dokument',
+          certificateOptional: '(Optional für GKV)',
+          uploadFile: 'Datei hochladen',
+          uploadHint: 'PDF, JPG oder PNG (max. 10MB)',
+        },
+        typeDescriptions: {
+          vacation: 'Genehmigungspflichtig, zieht vom Urlaubskonto ab',
+          sick: 'Meldepflichtig, Attest optional (eAU)',
+          sick_child: 'Meldepflichtig, Attest optional',
+          remote: 'Genehmigungspflichtig, A1-Bescheinigung erforderlich',
+          business_trip: 'Genehmigungspflichtig, zählt als Arbeitszeit',
         },
         success: {
           requested: 'Antrag erfolgreich eingereicht',
@@ -917,6 +933,7 @@ const resources = {
         errors: {
           endBeforeStart: 'Enddatum muss nach Startdatum liegen',
           fillAllFields: 'Bitte alle Felder ausfüllen',
+          notEnoughVacation: '⚠️ Nicht genug Urlaubstage!',
         },
         card: {
           from: 'von',
@@ -1895,6 +1912,22 @@ const resources = {
           submit: 'Submit Request',
           submitting: 'Submitting...',
           cancel: 'Cancel',
+          calculatedDays: 'That is {{days}} working days',
+          remainingAfter: 'Remaining after request: {{days}} days',
+          destinationCountry: 'Destination Country',
+          forA1: '(for A1 certificate)',
+          countryPlaceholder: 'e.g. Portugal',
+          certificate: 'Certificate / Document',
+          certificateOptional: '(Optional for public health insurance)',
+          uploadFile: 'Upload file',
+          uploadHint: 'PDF, JPG or PNG (max. 10MB)',
+        },
+        typeDescriptions: {
+          vacation: 'Requires approval, deducted from vacation account',
+          sick: 'Notification required, certificate optional (eAU)',
+          sick_child: 'Notification required, certificate optional',
+          remote: 'Requires approval, A1 certificate required',
+          business_trip: 'Requires approval, counts as working time',
         },
         success: {
           requested: 'Request submitted successfully',
@@ -1903,6 +1936,7 @@ const resources = {
         errors: {
           endBeforeStart: 'End date must be after start date',
           fillAllFields: 'Please fill in all fields',
+          notEnoughVacation: '⚠️ Not enough vacation days!',
         },
         card: {
           from: 'from',

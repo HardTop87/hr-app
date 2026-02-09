@@ -283,14 +283,14 @@ function AbsenceCard({
                 <p className="flex items-center gap-1">
                   <Plane size={14} />
                   {absence.destinationCountry}
-                  <span className="text-xs text-orange-600">(A1 erforderlich)</span>
+                  <span className="text-xs text-orange-600">{t('absenceManager.a1Required')}</span>
                 </p>
               )}
               
               {absence.certificateUrl && (
                 <p className="flex items-center gap-1 text-blue-600">
                   <FileText size={14} />
-                  {t('absences.card.certificateAvailable', 'Attest vorhanden')}
+                  {t('absenceManager.certificateAvailable')}
                 </p>
               )}
               
@@ -377,11 +377,11 @@ function AbsenceModal({
   };
 
   const absenceTypes: { value: AbsenceType; label: string; description: string }[] = [
-    { value: 'vacation', label: t('absences.type.vacation'), description: t('absences.typeDescriptions.vacation', 'Genehmigungspflichtig, zieht vom Urlaubskonto ab') },
-    { value: 'sick', label: t('absences.type.sick'), description: t('absences.typeDescriptions.sick', 'Meldepflichtig, Attest optional (eAU)') },
-    { value: 'sick_child', label: t('absences.type.sick_child'), description: t('absences.typeDescriptions.sick_child', 'Meldepflichtig, Attest optional') },
-    { value: 'work_remote_abroad', label: t('absences.type.remote'), description: t('absences.typeDescriptions.remote', 'Genehmigungspflichtig, A1-Bescheinigung erforderlich') },
-    { value: 'business_trip', label: t('absences.type.business_trip'), description: t('absences.typeDescriptions.business_trip', 'Genehmigungspflichtig, zählt als Arbeitszeit') },
+    { value: 'vacation', label: t('absences.type.vacation'), description: t('absences.typeDescriptions.vacation') },
+    { value: 'sick', label: t('absences.type.sick'), description: t('absences.typeDescriptions.sick') },
+    { value: 'sick_child', label: t('absences.type.sick_child'), description: t('absences.typeDescriptions.sick_child') },
+    { value: 'work_remote_abroad', label: t('absences.type.remote'), description: t('absences.typeDescriptions.remote') },
+    { value: 'business_trip', label: t('absences.type.business_trip'), description: t('absences.typeDescriptions.business_trip') },
   ];
 
   const showFileUpload = formData.type === 'sick' || formData.type === 'sick_child';
@@ -475,14 +475,14 @@ function AbsenceModal({
           {workingDays > 0 && (
             <div className={`p-3 rounded-lg ${isVacationOverLimit ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'}`}>
               <p className={`text-sm ${isVacationOverLimit ? 'text-red-800' : 'text-blue-800'}`}>
-                {t('absences.modal.calculatedDays', `Das sind ${workingDays} Arbeitstage`, { days: workingDays })}
+                {t('absences.modal.calculatedDays', { days: workingDays })}
                 {formData.type === 'vacation' && (
                   <>
                     {' • '}
                     {isVacationOverLimit ? (
-                      <span className="text-red-600 font-medium">{t('absences.errors.notEnoughVacation', '⚠️ Nicht genug Urlaubstage!')}</span>
+                      <span className="text-red-600 font-medium">{t('absences.errors.notEnoughVacation')}</span>
                     ) : (
-                      <span>{t('absences.modal.remainingAfter', `Verbleibend nach Antrag: ${stats.vacationRemaining - workingDays} Tage`, { days: stats.vacationRemaining - workingDays })}</span>
+                      <span>{t('absences.modal.remainingAfter', { days: stats.vacationRemaining - workingDays })}</span>
                     )}
                   </>
                 )}
@@ -494,13 +494,13 @@ function AbsenceModal({
           {showCountryInput && (
             <div>
               <label className="block text-sm font-medium text-[#4D2B41] mb-1">
-                {t('absences.modal.destinationCountry', 'Zielland')} * <span className="text-xs text-orange-600">{t('absences.modal.forA1', '(für A1-Bescheinigung)')}</span>
+                {t('absences.modal.destinationCountry')} * <span className="text-xs text-orange-600">{t('absences.modal.forA1')}</span>
               </label>
               <input
                 type="text"
                 value={formData.destinationCountry}
                 onChange={(e) => setFormData({ ...formData, destinationCountry: e.target.value })}
-                placeholder={t('absences.modal.countryPlaceholder', 'z.B. Portugal')}
+                placeholder={t('absences.modal.countryPlaceholder')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF79C9]"
                 required
               />
@@ -511,7 +511,7 @@ function AbsenceModal({
           {showFileUpload && (
             <div>
               <label className="block text-sm font-medium text-[#4D2B41] mb-1">
-                {t('absences.modal.certificate', 'Attest / Dokument')} <span className="text-xs text-gray-600">{t('absences.modal.certificateOptional', '(Optional für GKV)')}</span>
+                {t('absences.modal.certificate')} <span className="text-xs text-gray-600">{t('absences.modal.certificateOptional')}</span>
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-[#FF79C9] transition-colors cursor-pointer">
                 <input
@@ -527,8 +527,8 @@ function AbsenceModal({
                     <p className="text-sm text-[#4D2B41] font-medium">{file.name}</p>
                   ) : (
                     <>
-                      <p className="text-sm text-gray-600">{t('absences.modal.uploadFile', 'Datei hochladen')}</p>
-                      <p className="text-xs text-gray-500">{t('absences.modal.uploadHint', 'PDF, JPG oder PNG (max. 10MB)')}</p>
+                      <p className="text-sm text-gray-600">{t('absences.modal.uploadFile')}</p>
+                      <p className="text-xs text-gray-500">{t('absences.modal.uploadHint')}</p>
                     </>
                   )}
                 </label>

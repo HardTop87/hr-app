@@ -111,7 +111,7 @@ export default function AbsenceManager() {
                   : 'text-gray-600 hover:text-[#4D2B41]'
               }`}
             >
-              {i18n.language === 'de' ? 'Offene Anträge' : 'Pending Requests'}
+              {t('absenceManager.tabs.pending')}
               {pendingAbsences.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-[#FF79C9] text-white text-xs rounded-full">
                   {pendingAbsences.length}
@@ -126,7 +126,7 @@ export default function AbsenceManager() {
                   : 'text-gray-600 hover:text-[#4D2B41]'
               }`}
             >
-              {i18n.language === 'de' ? 'Historie' : 'History'}
+              {t('absenceManager.tabs.history')}
             </button>
           </div>
         </div>
@@ -142,7 +142,7 @@ export default function AbsenceManager() {
               <div className="text-center py-12">
                 <CheckCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-600">
-                  {i18n.language === 'de' ? 'Keine offenen Anträge' : 'No pending requests'}
+                  {t('absenceManager.noPending')}
                 </p>
               </div>
             ) : (
@@ -172,7 +172,7 @@ export default function AbsenceManager() {
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-600">
-                  {i18n.language === 'de' ? 'Keine Abwesenheiten' : 'No absences'}
+                  {t('absenceManager.noHistory')}
                 </p>
               </div>
             ) : (
@@ -180,16 +180,16 @@ export default function AbsenceManager() {
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                      {i18n.language === 'de' ? 'Mitarbeiter' : 'Employee'}
+                      {t('absenceManager.employee')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                      {i18n.language === 'de' ? 'Typ' : 'Type'}
+                      {t('absenceManager.type')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                      {i18n.language === 'de' ? 'Zeitraum' : 'Period'}
+                      {t('absenceManager.period')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">
-                      {i18n.language === 'de' ? 'Tage' : 'Days'}
+                      {t('absenceManager.workingDays')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase">
                       Status
@@ -241,21 +241,21 @@ export default function AbsenceManager() {
             <div className="px-6 py-4 bg-red-50 border-b border-red-200">
               <h2 className="text-xl font-semibold text-red-900 flex items-center gap-2">
                 <XCircle size={24} />
-                {i18n.language === 'de' ? 'Antrag ablehnen' : 'Reject Request'}
+                {t('absenceManager.rejectModal.title')}
               </h2>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
                 <p className="text-sm text-gray-600 mb-1">
-                  {i18n.language === 'de' ? 'Mitarbeiter:' : 'Employee:'}
+                  {t('absenceManager.rejectModal.employee')}
                 </p>
                 <p className="font-medium text-[#4D2B41]">{selectedAbsence.userName}</p>
               </div>
 
               <div>
                 <p className="text-sm text-gray-600 mb-1">
-                  {i18n.language === 'de' ? 'Zeitraum:' : 'Period:'}
+                  {t('absenceManager.rejectModal.period')}
                 </p>
                 <p className="font-medium text-[#4D2B41]">
                   {formatDateRange(selectedAbsence.startDate, selectedAbsence.endDate, locale)}
@@ -264,12 +264,12 @@ export default function AbsenceManager() {
 
               <div>
                 <label className="block text-sm font-medium text-[#4D2B41] mb-2">
-                  {i18n.language === 'de' ? 'Begründung *' : 'Reason *'}
+                  {t('absenceManager.rejectModal.reasonLabel')}
                 </label>
                 <textarea
-                  value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder={i18n.language === 'de' ? 'Bitte Ablehnungsgrund angeben...' : 'Please provide a reason...'}
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder={t('absenceManager.rejectModal.reasonPlaceholder')}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
@@ -282,7 +282,7 @@ export default function AbsenceManager() {
                 disabled={isSubmitting}
                 className="px-6 py-2 text-[#4D2B41] hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
               >
-                {i18n.language === 'de' ? 'Abbrechen' : 'Cancel'}
+                {t('absenceManager.rejectModal.cancel')}
               </button>
               <button
                 onClick={handleRejectSubmit}
@@ -292,12 +292,12 @@ export default function AbsenceManager() {
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {i18n.language === 'de' ? 'Wird abgelehnt...' : 'Rejecting...'}
+                    {t('absenceManager.rejectModal.submitting')}
                   </>
                 ) : (
                   <>
                     <XCircle size={18} />
-                    {i18n.language === 'de' ? 'Ablehnen' : 'Reject'}
+                    {t('absenceManager.rejectModal.submit')}
                   </>
                 )}
               </button>
