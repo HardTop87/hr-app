@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cococo-peach: #FFEFF8;
+  --color-cococo-pig: #FF79C9;
+  --color-cococo-berry: #4D2B41;
+  --color-cococo-moss: #1E4947;
+  
+  --font-family-sans: "Sofia Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-family-condensed: "Sofia Sans Condensed", sans-serif;
+}
