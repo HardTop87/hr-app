@@ -152,6 +152,7 @@ export const useTeamPresence = (userCompanyId: string, userDepartmentId: string 
         const absencesRef = collection(db, 'absences');
         const absencesQuery = query(
           absencesRef,
+          where('companyId', '==', userCompanyId),
           where('status', '==', 'approved')
         );
         const absencesSnapshot = await getDocs(absencesQuery);
@@ -170,7 +171,11 @@ export const useTeamPresence = (userCompanyId: string, userDepartmentId: string 
         // Get user details
         const userIds = [...new Set(todayAbsences.map(a => a.userId))];
         const usersRef = collection(db, 'users');
-        const usersQuery = query(usersRef, where('companyId', '==', userCompanyId));
+        const usersQuery = query(
+          usersRef,
+          where('companyId', '==', userCompanyId),
+          where('status', '==', 'active')
+        );
         const usersSnapshot = await getDocs(usersQuery);
 
         const usersMap = new Map<string, UserProfile>();
