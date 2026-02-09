@@ -24,7 +24,7 @@ import AssetManagement from './pages/admin/AssetManagement';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/hr-app">
       <AuthProvider>
         <NotificationProvider>
           <Toaster 
