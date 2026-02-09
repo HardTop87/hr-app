@@ -15,7 +15,6 @@ import {
   minutesToHours,
   getDaysBetween,
 } from '../utils/payrollUtils';
-import { getDateObject } from '../utils/dateUtils';
 
 export interface PayrollData {
   userId: string;
@@ -79,7 +78,7 @@ export function usePayroll(companyId: string) {
       for (const user of users) {
         const weeklyHours = user.weeklyHours || 40;
         const dailyHours = weeklyHours / 5;
-        const startDate = user.startDate ? getDateObject(user.startDate) : null;
+        const startDate = user.startDate ? new Date(user.startDate) : null;
         
         // Month calculations
         const workingDaysMonth = getWorkingDaysInMonth(year, month);
@@ -88,7 +87,6 @@ export function usePayroll(companyId: string) {
         // Get time entries for this month
         const timeEntriesQuery = query(
           collection(db, 'timeEntries'),
-          where('companyId', '==', companyId),
           where('userId', '==', user.uid),
           where('date', '>=', monthStart.toISOString().split('T')[0]),
           where('date', '<=', monthEnd.toISOString().split('T')[0]),
@@ -123,8 +121,8 @@ export function usePayroll(companyId: string) {
         
         absencesSnapshot.forEach((doc) => {
           const absence = doc.data() as Absence;
-          const absenceStart = getDateObject(absence.startDate);
-          const absenceEnd = getDateObject(absence.endDate);
+          const absenceStart = new Date(absence.startDate);
+          const absenceEnd = new Date(absence.endDate);
           
           // Check if absence overlaps with selected month
           if (absenceEnd >= monthStart && absenceStart <= monthEnd) {
@@ -152,7 +150,6 @@ export function usePayroll(companyId: string) {
           // Get all time entries since start
           const allTimeEntriesQuery = query(
             collection(db, 'timeEntries'),
-            where('companyId', '==', companyId),
             where('userId', '==', user.uid),
             where('type', '==', 'work')
           );
@@ -161,7 +158,7 @@ export function usePayroll(companyId: string) {
           let totalMinutes = 0;
           allTimeEntriesSnapshot.forEach((doc) => {
             const entry = doc.data() as TimeEntry;
-            const entryDate = getDateObject(entry.date);
+            const entryDate = new Date(entry.date);
             
             // Only count entries since start date
             if (entryDate >= startDate && entry.endTime) {

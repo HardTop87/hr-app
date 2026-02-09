@@ -8,7 +8,6 @@ import {
 import { db } from '../lib/firebase';
 import { getPublicHolidays } from '../utils/holidayUtils';
 import { parseHolidayRegion } from '../lib/countryConfig';
-import { getDateObject, toDateString } from '../utils/dateUtils';
 import type { Absence } from '../types/absence';
 import type { UserProfile } from '../types/user';
 
@@ -87,6 +86,7 @@ export function useTeamCalendar(
       }
 
       // Filter absences that overlap with the current month
+      // AND are either approved OR sick/sick_child (shown without approval)
       const relevantAbsences = absencesList.filter((absence) => {
         // Skip rejected or cancelled
         if (absence.status === 'rejected' || absence.status === 'cancelled') {
@@ -102,8 +102,8 @@ export function useTeamCalendar(
         }
 
         // Check if absence overlaps with the month
-        const absenceStart = getDateObject(absence.startDate);
-        const absenceEnd = getDateObject(absence.endDate);
+        const absenceStart = new Date(absence.startDate);
+        const absenceEnd = new Date(absence.endDate);
         
         return (
           (absenceStart <= monthEnd && absenceEnd >= monthStart)
@@ -171,10 +171,7 @@ export function isUserAbsentOnDate(
   const dateStr = date.toISOString().split('T')[0];
   
   for (const absence of user.absences) {
-    const startDateStr = toDateString(absence.startDate);
-    const endDateStr = toDateString(absence.endDate);
-    
-    if (dateStr >= startDateStr && dateStr <= endDateStr) {
+    if (dateStr >= absence.startDate && dateStr <= absence.endDate) {
       return absence;
     }
   }

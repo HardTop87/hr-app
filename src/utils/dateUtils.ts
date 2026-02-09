@@ -1,42 +1,4 @@
 /**
- * Safely convert various date formats to Date object
- * Handles Firestore Timestamps, ISO strings, and Date objects
- * @param date - Any date format (Timestamp, string, Date)
- * @returns Date object
- */
-export function getDateObject(date: any): Date {
-  if (!date) return new Date();
-  
-  // Firestore Timestamp
-  if (date && typeof date.toDate === 'function') {
-    return date.toDate();
-  }
-  
-  // Already a Date object
-  if (date instanceof Date) {
-    return date;
-  }
-  
-  // ISO string or other parseable format
-  if (typeof date === 'string') {
-    return new Date(date);
-  }
-  
-  // Fallback
-  return new Date();
-}
-
-/**
- * Convert date to YYYY-MM-DD string safely
- * @param date - Any date format
- * @returns YYYY-MM-DD string
- */
-export function toDateString(date: any): string {
-  const dateObj = getDateObject(date);
-  return dateObj.toISOString().split('T')[0];
-}
-
-/**
  * Calculate the probation end date based on start date and probation months
  * @param startDate - Start date in YYYY-MM-DD format
  * @param months - Number of probation months (0-6)
