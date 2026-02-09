@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Square, Coffee, Clock, Pause } from 'lucide-react';
+import { Play, Square, Clock, Pause } from 'lucide-react';
 import { useTimeTracking } from '../../hooks/useTimeTracking';
 import { toast } from 'react-hot-toast';
 
@@ -20,17 +20,8 @@ export default function TimeTrackingWidget({ userId }: TimeTrackingWidgetProps) 
     toggleBreak,
   } = useTimeTracking(userId);
 
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Update timer every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // Calculate elapsed time for active entry
   useEffect(() => {
