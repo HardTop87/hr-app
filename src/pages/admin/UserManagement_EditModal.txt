@@ -1,0 +1,256 @@
+      {/* Edit Modal with Tabs */}
+      {showEditModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-gray-900">
+                  {t('userManagement.editUser')}
+                </h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex gap-1 bg-gray-100 p-1 rounded-lg mb-6">
+                <button
+                  onClick={() => setEditModalTab('basic')}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    editModalTab === 'basic'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <User className="w-4 h-4 inline mr-2" />
+                  {t('userManagement.tabs.basic')}
+                </button>
+                <button
+                  onClick={() => setEditModalTab('employment')}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    editModalTab === 'employment'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Briefcase className="w-4 h-4 inline mr-2" />
+                  {t('userManagement.tabs.employment')}
+                </button>
+                <button
+                  onClick={() => setEditModalTab('settings')}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    editModalTab === 'settings'
+                      ? 'bg-white text-blue-600 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Shield className="w-4 h-4 inline mr-2" />
+                  {t('userManagement.tabs.settings')}
+                </button>
+              </div>
+
+              {/* Basic Info Tab */}
+              {editModalTab === 'basic' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <User className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.displayName')} *
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.displayName}
+                      onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Mail className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.email')} *
+                    </label>
+                    <input
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Hash className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.employeeId')}
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.employeeId}
+                      onChange={(e) => setEditForm({ ...editForm, employeeId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Briefcase className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.jobTitle')}
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.jobTitle}
+                      onChange={(e) => setEditForm({ ...editForm, jobTitle: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Building2 className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.department')}
+                    </label>
+                    <select
+                      value={editForm.departmentId}
+                      onChange={(e) => setEditForm({ ...editForm, departmentId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{t('userManagement.noDepartment')}</option>
+                      {departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>{dept.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Shield className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.role')} *
+                    </label>
+                    <select
+                      value={editForm.role}
+                      onChange={(e) => setEditForm({ ...editForm, role: e.target.value as Role })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="employee">{t('roles.employee')}</option>
+                      <option value="supervisor">{t('roles.supervisor')}</option>
+                      <option value="hr_manager">{t('roles.hr_manager')}</option>
+                      <option value="company_admin">{t('roles.company_admin')}</option>
+                      <option value="global_admin">{t('roles.global_admin')}</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Employment Tab */}
+              {editModalTab === 'employment' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <User className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.reportsTo')}
+                    </label>
+                    <select
+                      value={editForm.reportsTo}
+                      onChange={(e) => setEditForm({ ...editForm, reportsTo: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">{t('userManagement.form.noManager')}</option>
+                      {users
+                        .filter(u => u.uid !== selectedUser.uid && u.status === 'active')
+                        .map((user) => (
+                          <option key={user.uid} value={user.uid}>
+                            {user.displayName} {user.jobTitle ? `(${user.jobTitle})` : ''}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Briefcase className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.employmentType')}
+                    </label>
+                    <select
+                      value={editForm.employmentType}
+                      onChange={(e) => setEditForm({ ...editForm, employmentType: e.target.value as EmploymentType })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="full_time">{t('employeesPage.employmentTypes.full_time')}</option>
+                      <option value="part_time">{t('employeesPage.employmentTypes.part_time')}</option>
+                      <option value="contractor">{t('employeesPage.employmentTypes.contractor')}</option>
+                      <option value="intern">{t('employeesPage.employmentTypes.intern')}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Hash className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.weeklyHours')}
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.weeklyHours}
+                      onChange={(e) => setEditForm({ ...editForm, weeklyHours: Number(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      min="1"
+                      max="60"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Calendar className="w-4 h-4 inline mr-1" />
+                      {t('userManagement.form.vacationDays')}
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.vacationEntitlement}
+                      onChange={(e) => setEditForm({ ...editForm, vacationEntitlement: Number(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                      max="50"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Settings Tab */}
+              {editModalTab === 'settings' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-900 mb-1">
+                        {t('userManagement.form.requiresTimeTracking')}
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        {t('userManagement.form.timeTrackingHint')}
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editForm.requiresTimeTracking}
+                        onChange={(e) => setEditForm({ ...editForm, requiresTimeTracking: e.target.checked })}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  {t('userManagement.saveChanges')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}

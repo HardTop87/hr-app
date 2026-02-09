@@ -1,0 +1,181 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- 1. HELPER FUNCTIONS ---
+
+    // Basis
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Holt das User-Dokument des Anfragenden aus der Datenbank
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // -- Rollen-Checks --
+    
+    // 1. Global Admin (Darf alles überall)
+    function isGlobalAdmin() {
+      return isAuthenticated() && getUserData().role == 'global_admin';
+    }
+
+    // 2. Company Admin (Darf alles in SEINER Firma)
+    function isCompanyAdmin(companyId) {
+      return isAuthenticated() && 
+             getUserData().role == 'company_admin' && 
+             getUserData().companyId == companyId;
+    }
+
+    // 3. HR Manager (Darf Personaldaten in SEINER Firma verwalten)
+    function isHR(companyId) {
+      let user = getUserData();
+      return isAuthenticated() && 
+             (user.role == 'hr_manager' || user.role == 'company_admin') && 
+             user.companyId == companyId;
+    }
+
+    // 4. Supervisor (Teamleiter in SEINER Firma)
+    function isSupervisor(companyId) {
+      let user = getUserData();
+      return isAuthenticated() && 
+             (user.role == 'supervisor' || user.role == 'hr_manager' || user.role == 'company_admin') && 
+             user.companyId == companyId;
+    }
+
+    // 5. Normaler Mitarbeiter (Checkt nur Firmenzugehörigkeit)
+    function isEmployeeOfCompany(companyId) {
+      return isAuthenticated() && getUserData().companyId == companyId;
+    }
+
+    // Checkt ob User auf sein EIGENES Dokument zugreift
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // --- 2. RULES PER COLLECTION ---
+
+    // A. COMPANIES
+    match /companies/{companyId} {
+      // Lesen: Jeder Mitarbeiter der Firma (für Dashboard Name etc.)
+      allow read: if isGlobalAdmin() || isEmployeeOfCompany(companyId);
+      // Schreiben: Nur Global Admin oder Company Admin
+      allow write: if isGlobalAdmin() || isCompanyAdmin(companyId);
+
+      // Subcollection: Departments
+      match /departments/{deptId} {
+        allow read: if isGlobalAdmin() || isEmployeeOfCompany(companyId);
+        allow write: if isGlobalAdmin() || isCompanyAdmin(companyId) || isHR(companyId);
+      }
+    }
+
+    // B. USERS (Das kritische Dokument)
+    match /users/{userId} {
+      // LESEN:
+      // 1. Man selbst (get einzelnes Dokument)
+      // 2. Global Admin (alles)
+      // 3. Kollegen der gleichen Firma (für Kalender/Verzeichnis)
+      // 4. List-Queries wenn companyId in den Daten übereinstimmt
+      // -> Sensible Daten sind jetzt in Subcollection 'sensitive' ausgelagert
+      allow read: if isOwner(userId) || isGlobalAdmin() || (isAuthenticated() && resource.data.companyId == getUserData().companyId);
+
+      // SCHREIBEN / UPDATE:
+      // 1. Man selbst (z.B. Profilbild, Adresse ändern)
+      // 2. HR & Company Admin (Mitarbeiter anlegen/editieren)
+      allow create: if isAuthenticated(); // Für Signup Flow
+      allow update: if isOwner(userId) || isHR(resource.data.companyId) || isGlobalAdmin();
+      allow delete: if isHR(resource.data.companyId) || isGlobalAdmin();
+
+      // Subcollection: DOCUMENTS (Verträge, Lohnscheine)
+      // HIER SIND WIR STRIKT!
+      match /documents/{docId} {
+        // Lesen: Nur Owner und HR/Admin. KEIN Supervisor, KEIN Kollege.
+        allow read: if isOwner(userId) || isHR(get(/databases/$(database)/documents/users/$(userId)).data.companyId) || isGlobalAdmin();
+        // Schreiben: Nur HR/Admin (User darf hier nichts hochladen, außer wir erlauben es explizit)
+        allow write: if isHR(get(/databases/$(database)/documents/users/$(userId)).data.companyId) || isGlobalAdmin();
+      }
+
+      // Subcollection: SENSITIVE DATA (address, bankDetails, taxDetails, etc.)
+      // MAXIMALER SCHUTZ - Nur Owner, HR und Global Admin
+      match /sensitive/{docId} {
+        // Lesen: Nur Owner selbst, HR der Firma, oder Global Admin
+        allow read: if isOwner(userId) || isHR(get(/databases/$(database)/documents/users/$(userId)).data.companyId) || isGlobalAdmin();
+        // Schreiben: Nur Owner selbst (für eigene Daten), HR oder Global Admin
+        allow write: if isOwner(userId) || isHR(get(/databases/$(database)/documents/users/$(userId)).data.companyId) || isGlobalAdmin();
+      }
+    }
+
+    // C. TIME ENTRIES
+    match /timeEntries/{entryId} {
+      // Lesen:
+      // 1. Owner
+      // 2. Supervisor (Muss Zeiten prüfen)
+      // 3. HR/Admin
+      allow read: if isOwner(resource.data.userId) || 
+                  isSupervisor(resource.data.companyId) || 
+                  isGlobalAdmin();
+
+      // Schreiben:
+      // User für sich selbst, oder HR/Admin (Korrekturen)
+      allow create: if isOwner(request.resource.data.userId) || isHR(request.resource.data.companyId);
+      allow update: if isOwner(resource.data.userId) || isHR(resource.data.companyId);
+      allow delete: if isHR(resource.data.companyId) || isGlobalAdmin();
+    }
+
+    // D. ABSENCES (Urlaub)
+    match /absences/{absenceId} {
+      // Lesen:
+      // 1. Owner
+      // 2. Supervisor (Genehmigung)
+      // 3. Kollegen (FÜR KALENDER) -> Hier ist es okay, da "Urlaub" meist öffentlich ist.
+      allow read: if isOwner(resource.data.userId) || isEmployeeOfCompany(resource.data.companyId) || isGlobalAdmin();
+
+      // Schreiben (Beantragen):
+      allow create: if isOwner(request.resource.data.userId);
+      
+      // Update (Genehmigen):
+      // Supervisor darf genehmigen!
+      allow update: if isOwner(resource.data.userId) || isSupervisor(resource.data.companyId) || isGlobalAdmin();
+      
+      allow delete: if isHR(resource.data.companyId) || isGlobalAdmin();
+    }
+
+    // E. ASSETS (Inventar)
+    match /assets/{assetId} {
+      // Lesen: Owner (Mein Laptop) oder HR/Admin (Verwaltung)
+      allow read: if (isAuthenticated() && resource.data.assignedToUserId == request.auth.uid) || 
+                  isHR(resource.data.companyId) || 
+                  isGlobalAdmin();
+      
+      // Schreiben: Nur HR/Admin
+      allow write: if isHR(resource.data.companyId) || isGlobalAdmin();
+    }
+
+    // F. COMPANY DOCUMENTS (Handbücher)
+    match /company_documents/{docId} {
+      // Lesen: Alle Mitarbeiter
+      allow read: if isEmployeeOfCompany(resource.data.companyId) || isGlobalAdmin();
+      // Schreiben: Nur HR/Admin
+      allow write: if isHR(resource.data.companyId) || isGlobalAdmin();
+    }
+    
+    // G. ONBOARDING
+    match /onboarding_templates/{templateId} {
+       allow read: if isEmployeeOfCompany(resource.data.companyId) || isGlobalAdmin();
+       allow write: if isHR(resource.data.companyId) || isGlobalAdmin();
+    }
+
+    match /onboarding_processes/{processId} {
+       allow read: if isOwner(resource.data.userId) || isHR(resource.data.companyId) || isGlobalAdmin();
+       allow write: if isHR(resource.data.companyId) || isGlobalAdmin();
+       allow update: if isOwner(resource.data.userId) || isHR(resource.data.companyId);
+    }
+
+    // H. NOTIFICATIONS
+    match /notifications/{notifId} {
+      allow read, write: if isOwner(resource.data.userId);
+    }
+  }
+}
