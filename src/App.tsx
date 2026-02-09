@@ -24,7 +24,7 @@ import AssetManagement from './pages/admin/AssetManagement';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <NotificationProvider>
           <Toaster 
