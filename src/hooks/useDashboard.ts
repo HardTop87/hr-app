@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, query, where, getDocs, getDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { UserProfile } from '../types/user';
-import { isInProbation, getDaysUntil } from '../utils/dateUtils';
+import { isInProbation, getDaysUntil, getDateObject } from '../utils/dateUtils';
 
 interface DashboardStats {
   remainingVacationDays: number;
@@ -74,8 +74,8 @@ export const useDashboardStats = (userId: string): DashboardStats => {
         let usedVacationDays = 0;
         absencesSnapshot.forEach((doc) => {
           const absence = doc.data();
-          const startDate = absence.startDate.toDate();
-          const endDate = absence.endDate.toDate();
+          const startDate = getDateObject(absence.startDate);
+          const endDate = getDateObject(absence.endDate);
 
           // Only count days in current year
           if (startDate <= yearEnd && endDate >= yearStart) {
@@ -160,11 +160,16 @@ export const useTeamPresence = (userCompanyId: string, userDepartmentId: string 
         const todayAbsences: any[] = [];
         absencesSnapshot.forEach((doc) => {
           const absence = doc.data();
-          const startDate = absence.startDate.toDate();
-          const endDate = absence.endDate.toDate();
+          const startDate = getDateObject(absence.startDate);
+          const endDate = getDateObject(absence.endDate);
           
           if (startDate <= today && endDate >= today) {
-            todayAbsences.push({ id: doc.id, ...absence });
+            todayAbsences.push({ 
+              id: doc.id, 
+              ...absence,
+              startDate,
+              endDate
+            });
           }
         });
 
@@ -192,7 +197,7 @@ export const useTeamPresence = (userCompanyId: string, userDepartmentId: string 
           .map(absence => ({
             user: usersMap.get(absence.userId)!,
             type: absence.type,
-            returnDate: absence.endDate.toDate(),
+            returnDate: absence.endDate,
           }));
 
         // Sort: Own department first
@@ -246,7 +251,7 @@ export const useUpcomingBirthdays = (companyId: string): { birthdays: UpcomingBi
         usersSnapshot.forEach((doc) => {
           const user = doc.data();
           if (user.dateOfBirth) {
-            const birthDate = user.dateOfBirth.toDate();
+            const birthDate = getDateObject(user.dateOfBirth);
             const day = birthDate.getDate();
             const month = birthDate.getMonth();
 

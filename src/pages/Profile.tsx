@@ -7,7 +7,7 @@ import { usePersonalDocuments } from '../hooks/useDocuments';
 import type { PersonalDocument } from '../types/document';
 import { useUserAssets } from '../hooks/useAssets';
 import ProfilePictureUpload from '../components/profile/ProfilePictureUpload';
-import { COUNTRY_CONFIG, GERMAN_STATES, type CountryCode } from '../lib/countryConfig';
+import { COUNTRY_CONFIG, GERMAN_STATES, STATE_TO_HOLIDAY_REGION, type CountryCode } from '../lib/countryConfig';
 import { isInProbation, getDaysUntil, formatDate } from '../utils/dateUtils';
 import type { Department } from '../types/user';
 import type { AssetType } from '../types/asset';
@@ -238,17 +238,32 @@ export default function Profile() {
 
     setIsSaving(true);
     try {
+      // Update holidayRegion if user is in Germany and has selected a state
+      let updatedHolidayRegion = userProfile.holidayRegion;
+      if (address.country === 'DE' && address.region) {
+        updatedHolidayRegion = STATE_TO_HOLIDAY_REGION[address.region] || userProfile.holidayRegion;
+      }
+
       if (isMigrated) {
         // Save to sensitive subcollection
         const sensitiveRef = doc(db, 'users', userProfile.uid, 'sensitive', 'data');
         await updateDoc(sensitiveRef, {
           address,
         });
+        
+        // Update holidayRegion in main document if changed
+        if (updatedHolidayRegion !== userProfile.holidayRegion) {
+          const userRef = doc(db, 'users', userProfile.uid);
+          await updateDoc(userRef, {
+            holidayRegion: updatedHolidayRegion,
+          });
+        }
       } else {
         // Save to main document (pre-migration)
         const userRef = doc(db, 'users', userProfile.uid);
         await updateDoc(userRef, {
           address,
+          holidayRegion: updatedHolidayRegion,
         });
       }
       toast.success(t('profile.saveSuccess'));

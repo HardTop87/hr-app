@@ -52,6 +52,30 @@ export const GERMAN_STATE_CODES: Record<string, string> = {
 };
 
 /**
+ * Mapping of German state names to holidayRegion codes
+ * Used to automatically update holidayRegion when user changes their state in Profile
+ * Format: "Bayern" → "de-by"
+ */
+export const STATE_TO_HOLIDAY_REGION: Record<string, string> = {
+  'Baden-Württemberg': 'de-bw',
+  'Bayern': 'de-by',
+  'Berlin': 'de-be',
+  'Brandenburg': 'de-bb',
+  'Bremen': 'de-hb',
+  'Hamburg': 'de-hh',
+  'Hessen': 'de-he',
+  'Mecklenburg-Vorpommern': 'de-mv',
+  'Niedersachsen': 'de-ni',
+  'Nordrhein-Westfalen': 'de-nw',
+  'Rheinland-Pfalz': 'de-rp',
+  'Saarland': 'de-sl',
+  'Sachsen': 'de-sn',
+  'Sachsen-Anhalt': 'de-st',
+  'Schleswig-Holstein': 'de-sh',
+  'Thüringen': 'de-th',
+};
+
+/**
  * Helper: Parse holidayRegion string to extract state code
  * Format: "de-by" → "BY"
  */
