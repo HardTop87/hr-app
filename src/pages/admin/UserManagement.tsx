@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import type { UserProfile, Role, DocumentCategory, EmploymentType, Department } from '../../types/user';
 import type { PersonalDocument } from '../../types/document';
-import { collection, getDocs, addDoc, updateDoc, doc, query, where, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, setDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import { db, storage, auth } from '../../lib/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
@@ -296,13 +296,14 @@ const UserManagement: React.FC = () => {
       });
 
       // Update sensitive data (startDate, probationMonths, weeklyHours, vacationEntitlement)
+      // Use setDoc with merge to create the document if it doesn't exist
       const sensitiveRef = doc(db, 'users', selectedUser.uid, 'sensitive', 'data');
-      await updateDoc(sensitiveRef, {
+      await setDoc(sensitiveRef, {
         startDate: editForm.startDate,
         probationMonths: editForm.probationMonths,
         weeklyHours: editForm.weeklyHours,
         vacationEntitlement: editForm.vacationEntitlement,
-      });
+      }, { merge: true });
 
       // Note: Firebase Auth email cannot be updated by admin
       // User needs to update their own email through their account settings
