@@ -267,8 +267,8 @@ export default function AbsenceManager() {
                   {t('absenceManager.rejectModal.reasonLabel')}
                 </label>
                 <textarea
-                  value={rejectionReason}
-                  onChange={(e) => setRejectionReason(e.target.value)}
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
                   placeholder={t('absenceManager.rejectModal.reasonPlaceholder')}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
