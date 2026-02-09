@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-hot-toast';
 import { usePersonalDocuments } from '../../hooks/useDocuments';
 import { calculateProbationEnd, isInProbation, getDaysUntil } from '../../utils/dateUtils';
+import { APP_BASE_URL } from '../../utils/config';
 import {
   Plus,
   Edit2,
@@ -173,7 +174,7 @@ const UserManagement: React.FC = () => {
       const docRef = await addDoc(usersRef, newUserData);
 
       // Generate invite link
-      const link = `${window.location.origin}/signup?invite=${docRef.id}`;
+      const link = `${APP_BASE_URL}/signup?invite=${docRef.id}`;
       setInviteLink(link);
       setInvitedUserEmail(inviteForm.email.toLowerCase());
       setInvitedUserName(displayName);
